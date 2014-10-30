@@ -130,6 +130,7 @@ public final class LauncherSettings implements GameSettings {
         initGameDataDirectory();
         initUserJavaParameters();
         initUserGameParameters();
+        initQuickGameSetting();
     }
 
     private void initLocale() {
@@ -243,7 +244,7 @@ public final class LauncherSettings implements GameSettings {
                 logger.warn(WARN_MSG_INVALID_VALUE, quickGameSettingStr, PROPERTY_QUICK_GAME_SETTING);
             }
         }
-        properties.setProperty(PROPERTY_INITIAL_HEAP_SIZE, quickGameSettings.name());
+        properties.setProperty(PROPERTY_QUICK_GAME_SETTING, quickGameSettings.name());
     }
 
     private void initSearchForLauncherUpdates() {
