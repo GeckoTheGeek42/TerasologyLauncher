@@ -19,6 +19,7 @@ package org.terasology.launcher.game;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.launcher.util.JavaHeapSize;
+import org.terasology.launcher.util.QuickGameSettings;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,14 +48,17 @@ public final class GameStarter {
         gameThread = null;
     }
 
-    public boolean startGame(TerasologyGameVersion gameVersion, File gameDataDirectory, JavaHeapSize maxHeapSize, JavaHeapSize initialHeapSize, List<String> userJavaParameters, List<String> userGameParameters) {
+    public boolean startGame(TerasologyGameVersion gameVersion, File gameDataDirectory,
+                             JavaHeapSize maxHeapSize, JavaHeapSize initialHeapSize,
+                             List<String> userJavaParameters, QuickGameSettings quickGameSetting, List<String> userGameParameters) {
         if (isRunning()) {
             logger.warn("The game can not be started because another game is already running! '{}'", gameThread);
             return false;
         }
 
         final List<String> javaParameters = createJavaParameters(maxHeapSize, initialHeapSize, userJavaParameters);
-        final List<String> processParameters = createProcessParameters(gameVersion, gameDataDirectory, javaParameters, userGameParameters);
+        final List<String> processParameters = createProcessParameters(gameVersion, gameDataDirectory,
+                javaParameters, (quickGameSetting.isDefault()) ? userGameParameters : quickGameSetting.getGameParameterList());
 
         return startProcess(gameVersion, processParameters);
     }

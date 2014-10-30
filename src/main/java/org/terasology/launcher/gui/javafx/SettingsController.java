@@ -40,6 +40,7 @@ import org.terasology.launcher.util.DirectoryUtils;
 import org.terasology.launcher.util.GuiUtils;
 import org.terasology.launcher.util.JavaHeapSize;
 import org.terasology.launcher.util.Languages;
+import org.terasology.launcher.util.QuickGameSettings;
 
 import javax.swing.JOptionPane;
 import java.awt.Desktop;
@@ -90,6 +91,8 @@ public class SettingsController {
     private TextField userJavaParametersField;
     @FXML
     private TextField userGameParametersField;
+    @FXML
+    private ComboBox<QuickGameSettings> quickGameSettingsBox;
 
     @FXML
     protected void cancelSettingsAction(ActionEvent event) {
@@ -129,6 +132,9 @@ public class SettingsController {
         // save saveDownloadedFiles
         launcherSettings.setSaveDownloadedFiles(saveDownloadedFilesBox.isSelected());
 
+        // save quickGameSettings
+        launcherSettings.setQuickGameSetting(quickGameSettingsBox.getSelectionModel().getSelectedItem());
+
         //save userParameters (java & game), if textfield is empty then set to defaults
         if (userJavaParametersField.getText().isEmpty()) {
             launcherSettings.setUserJavaParameters(LauncherSettings.USER_JAVA_PARAMETERS_DEFAULT);
@@ -136,6 +142,8 @@ public class SettingsController {
         if (userGameParametersField.getText().isEmpty()) {
             launcherSettings.setUserGameParameters(LauncherSettings.USER_GAME_PARAMETERS_DEFAULT);
         }
+
+
 
         // store changed settings
         try {
@@ -271,6 +279,7 @@ public class SettingsController {
 
         populateJobBox();
         populateHeapSize();
+        populateQuickGameSettings();
         populateLanguage();
         populateSearchForLauncherUpdates();
         populateCloseLauncherAfterGameStart();
@@ -359,6 +368,14 @@ public class SettingsController {
         updateHeapSizeSelection();
     }
 
+    private void populateQuickGameSettings() {
+        quickGameSettingsBox.getItems().clear();
+        for (QuickGameSettings qgs : QuickGameSettings.values()) {
+            quickGameSettingsBox.getItems().add(qgs);
+        }
+        updateQuickGameSettingsSelection();
+    }
+
     private void populateLanguage() {
         languageBox.getItems().clear();
         for (Locale locale : Languages.SUPPORTED_LOCALES) {
@@ -407,5 +424,9 @@ public class SettingsController {
         if (!launcherSettings.getUserGameParameters().equals(LauncherSettings.USER_GAME_PARAMETERS_DEFAULT)) {
             userJavaParametersField.setText(launcherSettings.getUserJavaParameters());
         }
+    }
+
+    private void updateQuickGameSettingsSelection() {
+        quickGameSettingsBox.getSelectionModel().select(launcherSettings.getQuickGameSetting());
     }
 }

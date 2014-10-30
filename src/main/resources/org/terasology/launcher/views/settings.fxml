@@ -164,9 +164,10 @@
                                     </HBox>
                                     <Label text="%settings_game_javaParameters" GridPane.rowIndex="6" />
                                     <Label text="%settings_game_gameParameters" GridPane.rowIndex="7" />
-                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
                                        <children>
-                                          <TextField fx:id="userGameParametersField" prefHeight="31.0" prefWidth="389.0" promptText="%settings_game_gameParsPrompt" />
+                                          <TextField fx:id="userGameParametersField" prefHeight="31.0" prefWidth="299.0" promptText="%settings_game_gameParsPrompt" />
+                                          <ComboBox fx:id="quickGameSettingsBox" prefWidth="150.0" />
                                        </children>
                                     </HBox>
                                             </children>
