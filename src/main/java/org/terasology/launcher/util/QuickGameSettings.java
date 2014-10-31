@@ -8,7 +8,8 @@ import java.util.List;
  */
 public enum QuickGameSettings {
     DEFAULT("", "quickSettings_default"),
-    LOAD_LAST_GAME("-loadlastgame", "quickSettings_loadLastGame");
+    LOAD_LAST_GAME("-loadlastgame", "quickSettings_loadLastGame"),
+    HEADLESS("-headless", "quickSettings_headless");
     //MORE?
 
     private final String gameParameter;
