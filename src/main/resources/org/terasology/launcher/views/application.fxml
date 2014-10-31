@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?scenebuilder-stylesheet terasology.css?>
+
 <!--
   ~ Copyright 2014 MovingBlocks
   ~
@@ -16,6 +17,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+
 <?import java.lang.*?>
 <?import java.lang.String?>
 <?import java.net.*?>
@@ -51,7 +53,7 @@
 <?import javafx.scene.web.*?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane id="AnchorPane" fx:id="launcherFrame" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="562.140625" prefWidth="968.1666259765625" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="org.terasology.launcher.gui.javafx.ApplicationController">
+<AnchorPane id="AnchorPane" fx:id="launcherFrame" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="562.140625" prefWidth="968.1666259765625" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.terasology.launcher.gui.javafx.ApplicationController">
   <children>
     <StackPane prefHeight="529.0" prefWidth="756.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>
@@ -64,7 +66,7 @@
             </GaussianBlur>
           </effect>
           <image>
-            <Image url="@../images/background.jpg" preserveRatio="true" smooth="false" />
+            <Image preserveRatio="true" smooth="false" url="@../images/background.jpg" />
           </image>
         </ImageView>
         <BorderPane prefHeight="529.0" prefWidth="756.0">
@@ -77,7 +79,7 @@
                       <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                           <image>
-                            <Image url="@../images/facebook.png" preserveRatio="false" smooth="false" />
+                            <Image preserveRatio="false" smooth="false" url="@../images/facebook.png" />
                           </image>
                         </ImageView>
                       </graphic>
@@ -86,7 +88,7 @@
                       <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                           <image>
-                            <Image url="@../images/github.png" preserveRatio="false" smooth="false" />
+                            <Image preserveRatio="false" smooth="false" url="@../images/github.png" />
                           </image>
                         </ImageView>
                       </graphic>
@@ -95,7 +97,7 @@
                       <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                           <image>
-                            <Image url="@../images/gplus.png" preserveRatio="false" smooth="false" />
+                            <Image preserveRatio="false" smooth="false" url="@../images/gplus.png" />
                           </image>
                         </ImageView>
                       </graphic>
@@ -104,7 +106,7 @@
                       <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                           <image>
-                            <Image url="@../images/reddit.png" preserveRatio="false" smooth="false" />
+                            <Image preserveRatio="false" smooth="false" url="@../images/reddit.png" />
                           </image>
                         </ImageView>
                       </graphic>
@@ -113,7 +115,7 @@
                       <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                           <image>
-                            <Image url="@../images/twitter.png" preserveRatio="false" smooth="false" />
+                            <Image preserveRatio="false" smooth="false" url="@../images/twitter.png" />
                           </image>
                         </ImageView>
                       </graphic>
@@ -122,7 +124,7 @@
                       <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                           <image>
-                            <Image url="@../images/youtube.png" preserveRatio="false" smooth="false" />
+                            <Image preserveRatio="false" smooth="false" url="@../images/youtube.png" />
                           </image>
                         </ImageView>
                       </graphic>
@@ -198,7 +200,7 @@
               <children>
                 <ImageView fitHeight="96.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
                   <image>
-                    <Image url="@../images/logo.png" preserveRatio="false" smooth="false" />
+                    <Image preserveRatio="false" smooth="false" url="@../images/logo.png" />
                   </image>
                 </ImageView>
                 <HBox alignment="CENTER_RIGHT" prefHeight="96.0" prefWidth="668.1666259765625" spacing="8.0">
@@ -234,7 +236,7 @@
                           <graphic>
                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                               <image>
-                                <Image url="@../images/cancel.png" preserveRatio="false" smooth="false" />
+                                <Image preserveRatio="false" smooth="false" url="@../images/cancel.png" />
                               </image>
                             </ImageView>
                           </graphic>
@@ -246,7 +248,7 @@
                           <graphic>
                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                               <image>
-                                <Image url="@../images/download.png" preserveRatio="false" smooth="false" />
+                                <Image preserveRatio="false" smooth="false" url="@../images/download.png" />
                               </image>
                             </ImageView>
                           </graphic>
@@ -255,7 +257,7 @@
                           <graphic>
                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                               <image>
-                                <Image url="@../images/trash.png" preserveRatio="false" smooth="false" />
+                                <Image preserveRatio="false" smooth="false" url="@../images/trash.png" />
                               </image>
                             </ImageView>
                           </graphic>
@@ -264,16 +266,19 @@
                           <graphic>
                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                               <image>
-                                <Image url="@../images/play.png" preserveRatio="false" smooth="false" />
+                                <Image preserveRatio="false" smooth="false" url="@../images/play.png" />
                               </image>
                             </ImageView>
                           </graphic>
+                                       <contextMenu>
+                                          <ContextMenu fx:id="startMenu" />
+                                       </contextMenu>
                         </Button>
                         <Button fx:id="settingsButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#openSettingsAction" onMouseEntered="#handleControlButtonMouseEntered" onMouseExited="#handleControlButtonMouseExited" styleClass="controlButton">
                           <graphic>
                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                               <image>
-                                <Image url="@../images/settings.png" preserveRatio="false" smooth="false" />
+                                <Image preserveRatio="false" smooth="false" url="@../images/settings.png" />
                               </image>
                             </ImageView>
                           </graphic>
@@ -282,7 +287,7 @@
                           <graphic>
                             <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                               <image>
-                                <Image url="@../images/exit.png" preserveRatio="false" smooth="false" />
+                                <Image preserveRatio="false" smooth="false" url="@../images/exit.png" />
                               </image>
                             </ImageView>
                           </graphic>

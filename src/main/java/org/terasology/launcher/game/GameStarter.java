@@ -19,10 +19,12 @@ package org.terasology.launcher.game;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.launcher.util.JavaHeapSize;
+import org.terasology.launcher.util.QuickGameLaunch;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class GameStarter {
@@ -59,6 +61,18 @@ public final class GameStarter {
         return startProcess(gameVersion, processParameters);
     }
 
+    public boolean startGame(TerasologyGameVersion gameVersion, File gameDataDirectory, JavaHeapSize maxHeapSize, JavaHeapSize initialHeapSize, List<String> userJavaParameters, String gameParameter) {
+        if (isRunning()) {
+            logger.warn("The game can not be started because another game is already running! '{}'", gameThread);
+            return false;
+        }
+
+        final List<String> javaParameters = createJavaParameters(maxHeapSize, initialHeapSize, userJavaParameters);
+        final List<String> processParameters = createProcessParameters(gameVersion, gameDataDirectory, javaParameters, gameParameter);
+
+        return startProcess(gameVersion, processParameters);
+    }
+
     private List<String> createJavaParameters(JavaHeapSize maxHeapSize, JavaHeapSize initialHeapSize, List<String> userJavaParameters) {
         final List<String> javaParameters = new ArrayList<>();
         if (initialHeapSize.isUsed()) {
@@ -79,6 +93,18 @@ public final class GameStarter {
         processParameters.add(gameVersion.getGameJar().getName());
         processParameters.add("-homedir=" + gameDataDirectory.getPath());
         processParameters.addAll(gameParameters);
+
+        return processParameters;
+    }
+
+    private List<String> createProcessParameters(TerasologyGameVersion gameVersion, File gameDataDirectory, List<String> javaParameters, String gameParameters) {
+        final List<String> processParameters = new ArrayList<>();
+        processParameters.add("java");
+        processParameters.addAll(javaParameters);
+        processParameters.add("-jar");
+        processParameters.add(gameVersion.getGameJar().getName());
+        processParameters.add("-homedir=" + gameDataDirectory.getPath());
+        processParameters.add(gameParameters);
 
         return processParameters;
     }

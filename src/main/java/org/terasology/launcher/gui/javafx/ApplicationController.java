@@ -23,18 +23,14 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -58,6 +54,7 @@ import org.terasology.launcher.util.BundleUtils;
 import org.terasology.launcher.util.DirectoryUtils;
 import org.terasology.launcher.util.FileUtils;
 import org.terasology.launcher.util.Languages;
+import org.terasology.launcher.util.QuickGameLaunch;
 import org.terasology.launcher.version.TerasologyLauncherVersionInfo;
 
 import javax.swing.JOptionPane;
@@ -112,6 +109,8 @@ public class ApplicationController {
     private Accordion aboutInfoAccordion;
     @FXML
     private TableView<ILoggingEvent> loggingView;
+    @FXML
+    private ContextMenu startMenu;
 
     @FXML
     protected void handleExitButtonAction() {
@@ -202,6 +201,34 @@ public class ApplicationController {
             if (!gameStarted) {
                 JOptionPane.showMessageDialog(null, BundleUtils.getLabel("message_error_gameStart"),
                     BundleUtils.getLabel("message_error_title"), JOptionPane.ERROR_MESSAGE);
+            } else if (launcherSettings.isCloseLauncherAfterGameStart()) {
+                if (gameDownloadWorker == null) {
+                    logger.info("Close launcher after game start.");
+                    close();
+                } else {
+                    logger.info("The launcher can not be closed after game start, because a download is running.");
+                }
+            }
+        }
+    }
+
+    protected void startGameQuickLaunch(String gameParameter) {
+        final TerasologyGameVersion gameVersion = getSelectedGameVersion();
+        if ((gameVersion == null) || !gameVersion.isInstalled()) {
+            logger.warn("The selected game version can not be started! '{}'", gameVersion);
+            JOptionPane.showMessageDialog(null, BundleUtils.getLabel("message_error_gameStart"),
+                    BundleUtils.getLabel("message_error_title"), JOptionPane.ERROR_MESSAGE);
+            // updateGui();
+        } else if (gameStarter.isRunning()) {
+            logger.debug("The game can not be started because another game is already running.");
+            JOptionPane.showMessageDialog(null, BundleUtils.getLabel("message_information_gameRunning"),
+                    BundleUtils.getLabel("message_information_title"), JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            final boolean gameStarted = gameStarter.startGame(gameVersion, launcherSettings.getGameDataDirectory(), launcherSettings.getMaxHeapSize(),
+                    launcherSettings.getInitialHeapSize(), launcherSettings.getUserJavaParameterList(), gameParameter);
+            if (!gameStarted) {
+                JOptionPane.showMessageDialog(null, BundleUtils.getLabel("message_error_gameStart"),
+                        BundleUtils.getLabel("message_error_title"), JOptionPane.ERROR_MESSAGE);
             } else if (launcherSettings.isCloseLauncherAfterGameStart()) {
                 if (gameDownloadWorker == null) {
                     logger.info("Close launcher after game start.");
@@ -330,11 +357,29 @@ public class ApplicationController {
         gameStarter = new GameStarter();
 
         populateJobBox();
+        populateStartMenu();
 
         downloadButton.managedProperty().bind(downloadButton.visibleProperty());
         cancelDownloadButton.managedProperty().bind(cancelDownloadButton.visibleProperty());
 
         updateGui();
+    }
+
+    private void populateStartMenu() {
+        startMenu.getItems().clear();
+
+        for (final QuickGameLaunch launch : QuickGameLaunch.values()) {
+            MenuItem menuItem = new MenuItem(launch.toString());
+            final String gameParameter = launch.getLaunchParameter();
+            menuItem.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    startGameQuickLaunch(gameParameter);
+                }
+            });
+
+            startMenu.getItems().add(menuItem);
+        }
     }
 
     private void populateJobBox() {
