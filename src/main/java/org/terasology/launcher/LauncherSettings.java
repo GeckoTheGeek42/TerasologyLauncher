@@ -33,10 +33,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Provides access to launcher settings.
@@ -45,7 +42,7 @@ public final class LauncherSettings implements GameSettings {
 
     private static final Logger logger = LoggerFactory.getLogger(LauncherSettings.class);
 
-    private static final String LAUNCHER_SETTINGS_FILE_NAME = "TerasologyLauncherSettings.properties";
+    private static final String LAUNCHER_SETTINGS_FILE_DEFAULT = "TerasologyLauncherSettings.properties";
     private static final String COMMENT_SETTINGS = "Terasology Launcher - Settings";
 
     private static final GameJob JOB_DEFAULT = GameJob.TerasologyStable;
@@ -55,9 +52,9 @@ public final class LauncherSettings implements GameSettings {
     private static final boolean SEARCH_FOR_LAUNCHER_UPDATES_DEFAULT = true;
     private static final boolean CLOSE_LAUNCHER_AFTER_GAME_START_DEFAULT = true;
     private static final boolean SAVE_DOWNLOADED_FILES_DEFAULT = false;
-    private static final QuickGameSettings QUICK_GAME_SETTINGS_DEFAULT = QuickGameSettings.DEFAULT;
     public static final String USER_JAVA_PARAMETERS_DEFAULT = "-XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:MaxGCPauseMillis=20 -XX:ParallelGCThreads=10";
     public static final String USER_GAME_PARAMETERS_DEFAULT = "";
+    public static final String QUICK_GAME_SETTINGS_DEFAULT = "";
 
     private static final String PROPERTY_LOCALE = "locale";
     private static final String PROPERTY_JOB = "job";
@@ -72,16 +69,20 @@ public final class LauncherSettings implements GameSettings {
     private static final String PROPERTY_SAVE_DOWNLOADED_FILES = "saveDownloadedFiles";
     private static final String PROPERTY_USER_JAVA_PARAMETERS = "userJavaParameters";
     private static final String PROPERTY_USER_GAME_PARAMETERS = "userGameParameters";
-    private static final String PROPERTY_QUICK_GAME_SETTING = "quickGameSetting";
+    private static final String PROPERTY_QUICK_GAME_SETTINGS = "quickGameSetting";
 
     private static final String WARN_MSG_INVALID_VALUE = "Invalid value '{}' for the parameter '{}'!";
 
     private final File launcherSettingsFile;
     private final Properties properties;
 
-    public LauncherSettings(File launcherDirectory) {
-        launcherSettingsFile = new File(launcherDirectory, LAUNCHER_SETTINGS_FILE_NAME);
+    public LauncherSettings(File launcherDirectory, String launcherSettingsFileName) {
+        launcherSettingsFile = new File(launcherDirectory, launcherSettingsFileName);
         properties = new Properties();
+    }
+
+    public LauncherSettings(File launcherDirectory) {
+        this(launcherDirectory, LAUNCHER_SETTINGS_FILE_DEFAULT);
     }
 
     public String getLauncherSettingsFilePath() {
@@ -130,7 +131,7 @@ public final class LauncherSettings implements GameSettings {
         initGameDataDirectory();
         initUserJavaParameters();
         initUserGameParameters();
-        initQuickGameSetting();
+        initQuickGameSettings();
     }
 
     private void initLocale() {
@@ -234,17 +235,11 @@ public final class LauncherSettings implements GameSettings {
         }
     }
 
-    private void initQuickGameSetting() {
-        final String quickGameSettingStr = properties.getProperty(PROPERTY_QUICK_GAME_SETTING);
-        QuickGameSettings quickGameSettings = QUICK_GAME_SETTINGS_DEFAULT;
-        if (quickGameSettingStr != null) {
-            try {
-                quickGameSettings = QuickGameSettings.valueOf(quickGameSettingStr);
-            } catch (IllegalArgumentException e) {
-                logger.warn(WARN_MSG_INVALID_VALUE, quickGameSettingStr, PROPERTY_QUICK_GAME_SETTING);
-            }
+    private void initQuickGameSettings() {
+        final String quickGameSettingsStr = properties.getProperty(PROPERTY_QUICK_GAME_SETTINGS);
+        if (quickGameSettingsStr == null) {
+            properties.setProperty(PROPERTY_QUICK_GAME_SETTINGS, QUICK_GAME_SETTINGS_DEFAULT);
         }
-        properties.setProperty(PROPERTY_QUICK_GAME_SETTING, quickGameSettings.name());
     }
 
     private void initSearchForLauncherUpdates() {
@@ -390,12 +385,31 @@ public final class LauncherSettings implements GameSettings {
         return Arrays.asList(getUserGameParameters().split("\\s+"));
     }
 
-    public synchronized QuickGameSettings getQuickGameSetting() {
-        return QuickGameSettings.valueOf(properties.getProperty(PROPERTY_QUICK_GAME_SETTING));
+    public synchronized void setQuickGameSettings(String property) {
+        properties.setProperty(PROPERTY_QUICK_GAME_SETTINGS, property);
     }
 
-    public synchronized void setQuickGameSetting(QuickGameSettings quickGameSetting) {
-        properties.setProperty(PROPERTY_QUICK_GAME_SETTING, quickGameSetting.name());
+    public synchronized List<QuickGameSettings> getQuickGameSettings() {
+        String property = properties.getProperty(PROPERTY_QUICK_GAME_SETTINGS);
+        if (property.isEmpty()) {
+            return Arrays.asList(QuickGameSettings.DEFAULT);
+        }
+        List<QuickGameSettings> quickGameSettings = new ArrayList<>();
+        for (String name : property.split("\\s+")) {
+            quickGameSettings.add(QuickGameSettings.valueOf(name));
+        }
+        return quickGameSettings;
+    }
+
+    public synchronized List<String> getGameParameterList() {
+        List<String> pars = new ArrayList<>();
+        pars.addAll(getUserGameParameterList());
+        for (QuickGameSettings settings : getQuickGameSettings()) {
+            if (!settings.isDefault()) {
+                pars.add(settings.getGameParameter());
+            }
+        }
+        return pars;
     }
 
     public synchronized void setSearchForLauncherUpdates(boolean searchForLauncherUpdates) {

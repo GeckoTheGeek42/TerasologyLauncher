@@ -19,12 +19,16 @@ package org.terasology.launcher.gui.javafx;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -35,6 +39,7 @@ import org.terasology.launcher.game.JobItem;
 import org.terasology.launcher.game.TerasologyGameVersion;
 import org.terasology.launcher.game.TerasologyGameVersions;
 import org.terasology.launcher.game.VersionItem;
+import org.terasology.launcher.gui.QuickGameMenuItem;
 import org.terasology.launcher.util.BundleUtils;
 import org.terasology.launcher.util.DirectoryUtils;
 import org.terasology.launcher.util.GuiUtils;
@@ -48,6 +53,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class SettingsController {
 
@@ -92,7 +98,7 @@ public class SettingsController {
     @FXML
     private TextField userGameParametersField;
     @FXML
-    private ComboBox<QuickGameSettings> quickGameSettingsBox;
+    private MenuButton quickGameSettingsBox;
 
     @FXML
     protected void cancelSettingsAction(ActionEvent event) {
@@ -132,9 +138,6 @@ public class SettingsController {
         // save saveDownloadedFiles
         launcherSettings.setSaveDownloadedFiles(saveDownloadedFilesBox.isSelected());
 
-        // save quickGameSettings
-        launcherSettings.setQuickGameSetting(quickGameSettingsBox.getSelectionModel().getSelectedItem());
-
         //save userParameters (java & game), if textfield is empty then set to defaults
         if (userJavaParametersField.getText().isEmpty()) {
             launcherSettings.setUserJavaParameters(LauncherSettings.USER_JAVA_PARAMETERS_DEFAULT);
@@ -143,7 +146,19 @@ public class SettingsController {
             launcherSettings.setUserGameParameters(LauncherSettings.USER_GAME_PARAMETERS_DEFAULT);
         }
 
-
+        //store Quick Game Settings
+        StringBuilder property = new StringBuilder();
+        for (MenuItem menuItem : quickGameSettingsBox.getItems()) {
+            if (Objects.equals(menuItem.getText(), QuickGameSettings.DEFAULT.toString())) {
+                continue;
+            }
+            QuickGameMenuItem checkMenuItem = (QuickGameMenuItem) menuItem;
+            if (checkMenuItem.isSelected()) {
+                property.append(checkMenuItem.key);
+                property.append(" ");
+            }
+        }
+        launcherSettings.setQuickGameSettings(property.toString());
 
         // store changed settings
         try {
@@ -370,8 +385,25 @@ public class SettingsController {
 
     private void populateQuickGameSettings() {
         quickGameSettingsBox.getItems().clear();
-        for (QuickGameSettings qgs : QuickGameSettings.values()) {
-            quickGameSettingsBox.getItems().add(qgs);
+        for (QuickGameSettings setting : QuickGameSettings.values()) {
+            if(setting.isDefault()) {
+                MenuItem menuItem = new MenuItem(setting.toString());
+                //when you click Run Normally, disable all others
+                menuItem.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        for (MenuItem item : quickGameSettingsBox.getItems()) {
+                            if(Objects.equals(item.getText(), QuickGameSettings.DEFAULT.toString())) {
+                                continue;
+                            }
+                            ((CheckMenuItem) item).setSelected(false);
+                        }
+                    }
+                });
+                quickGameSettingsBox.getItems().add(menuItem);
+                continue;
+            }
+            quickGameSettingsBox.getItems().add(new QuickGameMenuItem(setting));
         }
         updateQuickGameSettingsSelection();
     }
@@ -415,6 +447,21 @@ public class SettingsController {
         initialHeapSizeBox.getSelectionModel().select(launcherSettings.getInitialHeapSize());
     }
 
+    private void updateQuickGameSettingsSelection() {
+        for (QuickGameSettings setting : launcherSettings.getQuickGameSettings()) {
+            for (MenuItem item : quickGameSettingsBox.getItems()) {
+                if (Objects.equals(item.getText(), QuickGameSettings.DEFAULT.toString())) {
+                    continue;
+                }
+                QuickGameMenuItem menuItem = (QuickGameMenuItem) item;
+                if(Objects.equals(menuItem.getText(), setting.toString())) {
+                    menuItem.setSelected(true);
+                    break;
+                }
+            }
+        }
+    }
+
     private void initUserParameterFields()  {
         //if the VM parameters are left default do not display, the prompt message will show
         if (!launcherSettings.getUserJavaParameters().equals(LauncherSettings.USER_JAVA_PARAMETERS_DEFAULT)) {
@@ -424,9 +471,5 @@ public class SettingsController {
         if (!launcherSettings.getUserGameParameters().equals(LauncherSettings.USER_GAME_PARAMETERS_DEFAULT)) {
             userJavaParametersField.setText(launcherSettings.getUserJavaParameters());
         }
-    }
-
-    private void updateQuickGameSettingsSelection() {
-        quickGameSettingsBox.getSelectionModel().select(launcherSettings.getQuickGameSetting());
     }
 }
